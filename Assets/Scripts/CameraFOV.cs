@@ -20,7 +20,7 @@ public class CameraFOV : MonoBehaviour
         {
             camara.fieldOfView += 5;
         }
-
+        
         camara.fieldOfView = Mathf.Clamp(camara.fieldOfView, 50, 120);
     }
 }

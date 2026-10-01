@@ -1,0 +1,92 @@
+﻿Aclaración: La siguiente explicación la voy a hacer con mis propias palabras en base a mis conocimientos actuales. Mis códigos los hizo chat gpt pero puedo leerlos y entender algunas cosas. Las cosas que están en los scripts que yo no sepa no las mencionaré o como mucho haré suposiciones en base a lo que yo sé.
+
+
+
+
+Primer Script: PlayerMovement
+* El script arranca definiendo algunas variables globales que se van a utilizar:
+   * public float velocidad = 5f: Establecemos la velocidad del jugador, le damos un valor. Se puede cambiar si se quiere después en el editor.
+   * public float fuerzaSalto = 5f: Establecemos que tan alto puede saltar el jugador, le damos un valor. Se puede cambiar si se quiere después en el editor.
+   * bool estaEnElPiso: Con esta variable chequeamos si el jugador está en el piso. Por la forma en la que está escrita, deduzco que arranca siendo true.
+
+
+* Dentro de la parte global de este script,  tenemos dos líneas llamadas PlayerStats stats; y Rigidbody rb;. Mi suposición es que ambas líneas se encargan de llamar/hacer referencia a componentes que están por fuera de este script, y se les asigna un nombre para ser usados en este script (stats y rb).
+* Posteriormente, en el método Start() ocurre la acción propiamente dicha de traer el componente tanto para rb y stats.
+* En el método Update () hay varias cosas:
+   * Una primera condición que establece que, si la vida del jugador es menor o igual a cero, no va a poder moverse de su posición, sin importar cuantas veces presione los botones para moverse.
+   * Se declaran localmente las variables que le permiten al player moverse tanto en x como en z mediante los inputs de su teclado (WASD) y asegurando que no se pueda mover en y.
+   * Una segunda condición que se cumple si la barra espaciadora está presionada, el Player está en el piso y su stamina es mayor o igual a cinco. El resultado deriva en que el player pueda saltar, reduciendo su estamina en cinco.
+
+
+
+
+Segundo Script: CameraFOV
+* Se hace referencia al componente Camera que está dentro de main camera y se le da un nombre para usarlo dentro de este script.
+* Dentro de Update(), se crean dos condiciones que permiten que el Player pueda bajar o subir su FOV presionando las teclas T y Y.
+* Por último, se establecen los límites del FOV en 50 y 120. De esta forma, el FOV no puede ir por debajo ni por encima de esos límites.
+
+
+
+Tercer Script: PlayerStats
+* Se declaran de forma global y publica las variables float vida = 100 y float estamina = 10. Sus valores se pueden cambiar en el editor.
+* Dentro del Update():
+   * Hacemos que el Player regenera su estamina 2 puntos por minuto usando Time.deltaTime.
+   * Establecemos el mínimo y máximo de los límites de la estamina: cero y diez.
+   * Ponemos una condición que establece que, si la vida del player es menor o igual a 0, la variable vida pasa a ser cero.
+* Se crea un método aparte que se encarga del daño que recibe el player.
+   * Cuando el player recibe daño, la variable vida disminuye, y se muestra un mensaje por consola avisando que recibió daño y su vida actual.
+   * Si la vida del player llega a cero, la consola lo muestra también.
+
+
+Cuarto Script: PlayerGun
+* Se declaran de forma global y publica las variables float rango, float daño, float cadencia e int balas. Se les asignan un valor a cada una que luego se puede cambiar en el editor.
+* Se declara un float aparte para calcular el tiempo que pasa desde el último disparo.
+* Se hace referencia y se llama al script de PlayerStats.
+* En Update(), se crea:
+   * Una primera condición que indica que si la vida del jugador es menor o igual a cero, el código deja de ejecutarse.
+   * Una segunda condición que establece que, si el jugador presiona el click izquierdo y su cantidad de balas es mayor a cero, se ejecuta todo el código que haya dentro del método Disparar().
+
+
+* El metodo Disparar() se encarga de:
+   * Reducir en uno la cantidad de balas cada vez que el Player dispara.
+   * Dar un tiempo entre cada disparo.
+   * Mostrar en consola las balas restantes.
+   * Colocar un raycast que haga que el Player pueda colisionar/hacer contacto con el Enemy y así poder hacerle daño. 
+
+
+Quinto Script: EnemyStats
+* Se declara de forma global y pública la vida del Enemy, cuyo valor se puede cambiar en el editor.
+* Se crea un método que se encarga del daño que el Enemy recibe, haciendo que su variable vida disminuya al recibir daño, mostrándolo en la consola.
+* Se crea una condición en la que, si la vida del Enemy es menor o igual a cero, la variable vida pasa a ser cero.
+
+
+Sexto Script: EnemyMovement
+* Se declara de forma global y publica la velocidad y alcancePersecucion del Enemy, cuyos valores se pueden cambiar desde el editor.
+* Se hace público el componente Transform para en el editor colocar al player después.
+* Se hace referencia y se llama a los componentes RigidBody y EnemyStats, dándoles un nombre dentro de este script.
+* Dentro de Update():
+   * Se crea una primera condición que hace que el enemy ya no pueda moverse si su vida es menor o igual a cero, parando la ejecución del código posterior.
+   * Se calcula la distancia entre la posición del enemy y la del player para crear la variable local float distancia.
+   * Se crea una segunda condición que hace que el enemy persiga al player si está dentro de su alcance de persecución. Se normaliza su velocidad y se declara que su dirección en Y sea cero. Si no se cumple esta condición, el enemy permanece en su posición inicial.
+
+
+Séptimo Script: EnemyGun
+* Se declaran de forma global y publica las variables float rango, float daño y float cadencia. Se les asignan un valor a cada una que luego se puede cambiar en el editor.
+* Se hace público el componente Transform para en el editor colocar al player después.
+* Se declara un float aparte para calcular el tiempo que pasa desde el último disparo.
+* Se hace referencia y se llama al componente EnemyStats, dándole un nombre dentro de este script.
+* Dentro de Update():
+   * Se crea una primera condición que hace que el enemy ya no pueda moverse si su vida es menor o igual a cero, parando la ejecución del código posterior.
+   * Se declara localmente la variable float distancia, que compara las posiciones del player y del enemy.
+   * Se crea una segunda condición que hace que, si el player está dentro del rango de disparo del enemy, se ejecute el código dentro del método Disparar().
+* Dentro de Disparar():
+   * Se establece un tiempo entre cada disparo.
+   * Se compara las posiciones del enemy y del player.
+   * Se coloca un raycast que haga que el Enemy pueda colisionar/hacer contacto con el Player y así poder hacerle daño. 
+
+
+Octavo Script: AmmoPickup
+* Se crea una variable global y publica llamadas balasQueSuma. Su valor se puede cambiar en el editor.
+* Se crea un método que se ejecuta cuando el player colisiona con el cubo al cual se le asigna este componente. Al hacerlo:
+   * Se hace referencia y se llama al componente PlayerGun, dándole un nombre dentro de este script.
+   * Se crea una condición que hace que la cantidad de balas del player se incrementen. La cantidad total de balas se muestran en la consola. Finalmente, el gameobject con este componente se destruye,
